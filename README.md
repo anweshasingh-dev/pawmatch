@@ -20,32 +20,29 @@ PawMatch is a full-stack web application designed to help owners locate lost pet
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/your-username/pawmatch.git](https://github.come/anweshasingh-dev/pawmatch.git)
+   git clone [https://github.com/anweshasingh-dev/pawmatch.git](https://github.come/anweshasingh-dev/pawmatch.git)
    cd pawmatch
-   Set up Virtual Environment:
    ```
-
-```bash
-python -m venv .venv
-source .venv/bin/activate # On Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-Configure Environment Variables:
-Create a .env file in the root directory:
-```
-
-```text
-Code snippet
-POSTGRES_DB=pawmatch
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=your_password
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
-Run Application:
-```
-
-```bash
-python app.py
-```
+2. **Set up Virtual Environment:**
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate # On Windows: .venv\Scripts\activate
+   pip install -r requirements.txt
+   ```
+3. **Configure Environment Variables:**
+   Create a .env file in the root directory: 
+   ```text
+   Code snippet
+   POSTGRES_DB=pawmatch
+   POSTGRES_USER=postgres
+   POSTGRES_PASSWORD=your_password
+   POSTGRES_HOST=localhost
+   POSTGRES_PORT=5432
+   ```
+4. **Run Application:**
+   ```bash
+   python app.py
+   ```
 
 ## Upcoming Roadmap
 
