@@ -30,6 +30,7 @@ PawMatch is a full-stack web application designed to help owners locate lost pet
    pip install -r requirements.txt
    ```
 3. **Configure Environment Variables:**
+
    Create a .env file in the root directory: 
    ```text
    Code snippet
@@ -39,7 +40,7 @@ PawMatch is a full-stack web application designed to help owners locate lost pet
    POSTGRES_HOST=localhost
    POSTGRES_PORT=5432
    ```
-4. **Run Application:**
+5. **Run Application:**
    ```bash
    python app.py
    ```
