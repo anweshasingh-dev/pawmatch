@@ -1,13 +1,12 @@
 import os
+import json
 import psycopg2
 from psycopg2.extras import RealDictCursor
-import hashlib
-import json
+from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# Update with your local PostgreSQL credentials or environment variable
 DB_CONFIG = {
     "dbname": os.environ.get("POSTGRES_DB", "pawmatch"),
     "user": os.environ.get("POSTGRES_USER", "postgres"),
@@ -20,13 +19,10 @@ def get_db_connection():
     """Returns a new PostgreSQL connection with dictionary cursor capabilities."""
     return psycopg2.connect(**DB_CONFIG, cursor_factory=RealDictCursor)
 
-def hash_password(password: str) -> str:
-    """Hashes a password using SHA-256."""
-    return hashlib.sha256(password.encode()).hexdigest()
-
 def create_user(name: str, email: str, password: str) -> bool:
-    """Registers a new user."""
-    pwd_hash = hash_password(password)
+    """Registers a new user with secure password hashing."""
+    # Hashes password using salted scrypt/pbkdf2
+    pwd_hash = generate_password_hash(password)
     try:
         with get_db_connection() as conn:
             with conn.cursor() as cursor:
@@ -40,16 +36,21 @@ def create_user(name: str, email: str, password: str) -> bool:
         return False
 
 def verify_user(email: str, password: str):
-    """Verifies user credentials."""
-    pwd_hash = hash_password(password)
+    """Verifies user credentials against salted hash."""
     with get_db_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute(
-                "SELECT id, name, email FROM users WHERE email = %s AND password_hash = %s",
-                (email.strip().lower(), pwd_hash)
+                "SELECT id, name, email, password_hash FROM users WHERE email = %s",
+                (email.strip().lower(),)
             )
             user = cursor.fetchone()
-            return dict(user) if user else None
+            
+            # Constant-time comparison check
+            if user and check_password_hash(user['password_hash'], password):
+                user_dict = dict(user)
+                user_dict.pop('password_hash', None)  # Remove hash before returning user object
+                return user_dict
+            return None
 
 def save_report(data: dict) -> int:
     query = """

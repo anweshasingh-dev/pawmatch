@@ -1,25 +1,56 @@
 {% extends 'base.html' %}
-{% block content %}
-<h1 class="text-3xl font-bold mb-6">📢 Active Pet Reports</h1>
 
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    {% for r in reports %}
-    <div class="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden shadow-lg">
-        <img src="/{{ r.image_path }}" class="w-full h-48 object-cover">
-        <div class="p-4">
-            <span class="px-2 py-1 text-xs font-bold rounded {% if r.type == 'LOST' %}bg-red-800 text-red-200{% else %}bg-emerald-800 text-emerald-200{% endif %}">
-                {{ r.type }}
-            </span>
-            <h2 class="text-xl font-bold mt-2">{{ r.pet_name or 'Unnamed Pet' }} ({{ r.species|capitalize }})</h2>
-            <p class="text-gray-400 text-sm mt-1">📍 {{ r.address }}</p>
-            <p class="text-gray-400 text-sm">📅 {{ r.event_date }}</p>
-            <div class="mt-4 flex justify-between items-center">
-                <a href="/matches/{{ r.id }}" class="text-indigo-400 hover:text-indigo-300 text-sm font-semibold">View AI Matches →</a>
+{% block content %}
+<div style="padding: 2rem; max-width: 1200px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2 style="color: #ffffff; font-size: 1.75rem; font-weight: 700; margin: 0;">📢 Active Pet Reports</h2>
+        <span style="background: #2a2e39; color: #a0aec0; padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.875rem;">
+            {{ reports|length }} Total
+        </span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+        {% for report in reports %}
+        <div style="background: #1e222d; border-radius: 12px; overflow: hidden; border: 1px solid #2e3444; display: flex; flex-direction: column;">
+            
+            {# Extracts filename regardless of Windows (\) or Unix (/) slashes #}
+            {% set image_filename = report.image_path.replace('\\', '/').split('/')[-1] %}
+            
+            <img src="{{ url_for('uploaded_file', filename=report.filename) }}" 
+                 alt="Pet Photo" 
+                 style="width: 100%; height: 220px; object-fit: cover; display: block; background: #151821;">
+            <div style="padding: 1.25rem; flex-grow: 1; display: flex; flex-direction: column;">
+                <div>
+                    <span class="inline-block px-2 py-1 rounded text-xs font-bold uppercase mb-3 {% if report.type == 'LOST' %}bg-red-600{% else %}bg-emerald-600{% endif %} text-white">
+                        {{ report.type }}
+                    </span>
+                </div>
+
+                <h3 style="color: #ffffff; margin: 0 0 0.5rem 0; font-size: 1.25rem;">
+                    {{ report.pet_name or 'Unnamed' }} 
+                    <span style="color: #a0aec0; font-size: 0.9rem; font-weight: normal;">({{ report.species|capitalize }})</span>
+                </h3>
+
+                <p style="color: #a0aec0; margin: 0 0 0.25rem 0; font-size: 0.9rem;">
+                    📍 {{ report.address or 'Unknown location' }}
+                </p>
+                <p style="color: #718096; margin: 0 0 1.25rem 0; font-size: 0.85rem;">
+                    📅 {{ report.event_date }}
+                </p>
+
+                <div style="margin-top: auto;">
+                    <a href="{{ url_for('view_matches', report_id=report.id) }}" 
+                       style="display: block; width: 100%; text-align: center; padding: 0.6rem 0; border: 1px solid #4a5568; border-radius: 6px; color: #63b3ed; text-decoration: none; font-size: 0.9rem; font-weight: 500;">
+                        View AI Matches →
+                    </a>
+                </div>
             </div>
         </div>
+        {% else %}
+        <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #a0aec0;">
+            No active pet reports available.
+        </div>
+        {% endfor %}
     </div>
-    {% else %}
-    <p class="text-gray-400">No active reports yet. Be the first to report!</p>
-    {% endfor %}
 </div>
 {% endblock %}

@@ -47,9 +47,8 @@ PawMatch is a full-stack web application designed to help owners locate lost pet
 
 ## Upcoming Roadmap
 
-- [ ] **Custom ML Engine:** Train and integrate a custom pet detection model to replace the current stub interface.
-- [ ] **Enhanced Ranking Engine:** Fine-tune similarity algorithms across vector embeddings and time-decay metrics.
-
+- [x] **Custom ML Engine:** Fine-tune and integrate custom ResNet-50 pet embedder model.
+- [x] **Enhanced Ranking Engine:** Incorporate time-decay metrics and automated email match notifications.
 - [ ] **UI/UX Polishing:** Redesign user forms and dashboard views using styled CSS components.
-
 - [ ] **Authentication:** Implement full user registration, password hashing, and session persistence.
+- [ ] **pgvector Migration:** Native PostgreSQL vector extension integration for scalable vector similarity indexing.

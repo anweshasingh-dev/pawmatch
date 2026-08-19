@@ -1,62 +1,28 @@
-{% extends 'base.html' %}
-{% block content %}
-<div class="mb-6">
-    <a href="/" class="text-indigo-400 hover:text-indigo-300 text-sm font-semibold">← Back to Feed</a>
-    <h1 class="text-3xl font-bold mt-2">🎯 AI Ranked Matches for Report #{{ target.id }}</h1>
-</div>
-
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <!-- Target Report Column -->
-    <div class="bg-gray-800 border border-indigo-500 rounded-lg p-6 h-fit shadow-xl">
-        <span class="px-2 py-1 text-xs font-bold rounded {% if target.type == 'LOST' %}bg-red-800 text-red-200{% else %}bg-emerald-800 text-emerald-200{% endif %}">
-            {{ target.type }} REPORT
-        </span>
-        <img src="/{{ target.image_path }}" class="w-full h-56 object-cover rounded mt-4">
-        <h2 class="text-2xl font-bold mt-3">{{ target.pet_name or 'Unnamed Pet' }}</h2>
-        
-        <div class="mt-4 space-y-2 text-sm text-gray-300">
-            <p><strong>Species:</strong> {{ target.species|capitalize }}</p>
-            <p><strong>Breed:</strong> {{ target.breed or 'N/A' }}</p>
-            <p><strong>Color/Marks:</strong> {{ target.color or 'N/A' }} — {{ target.distinctive_marks or 'None' }}</p>
-            <p><strong>Location:</strong> {{ target.address }}</p>
-            <p><strong>Date:</strong> {{ target.event_date }}</p>
-            <p><strong>Contact:</strong> {{ target.contact_name }} ({{ target.contact_phone }})</p>
-        </div>
+<div class="card">
+  <div class="card-img-wrapper">
+    <img src="/{{ match.image_path }}" alt="Match Candidate" />
+    <span class="match-score-badge">
+      ⚡ {{ match.match_score }}% Match
+    </span>
+  </div>
+  
+  <div class="card-body">
+    <h3 class="card-title">{{ match.pet_name or 'Unnamed Pet' }} ({{ match.species | capitalize }})</h3>
+    
+    <div class="card-meta">
+      📍 {{ match.address }}
+    </div>
+    <div class="card-meta">
+      📅 Date: {{ match.event_date }}
+    </div>
+    <div class="card-meta">
+      🎨 Color: {{ match.color or 'N/A' }} | Breed: {{ match.breed or 'Unknown' }}
     </div>
 
-    <!-- Ranked Candidate Matches Column -->
-    <div class="lg:col-span-2 space-y-6">
-        <h2 class="text-xl font-bold text-gray-200">Potential Matches Found ({{ matches|length }})</h2>
-
-        {% for m in matches %}
-        {% set cand = m.candidate_report %}
-        {% set score = m.match_score %}
-        <div class="bg-gray-800 border border-gray-700 rounded-lg p-5 flex flex-col md:flex-row gap-5 shadow-md">
-            <img src="/{{ cand.image_path }}" class="w-full md:w-44 h-44 object-cover rounded">
-            
-            <div class="flex-grow">
-                <div class="flex justify-between items-start">
-                    <span class="px-3 py-1 rounded-full text-xs font-bold {% if score >= 70 %}bg-emerald-900 text-emerald-300{% elif score >= 40 %}bg-yellow-900 text-yellow-300{% else %}bg-red-900 text-red-300{% endif %}">
-                        Match Score: {{ score }}%
-                    </span>
-                    <span class="text-xs text-gray-400">Report #{{ cand.id }}</span>
-                </div>
-
-                <h3 class="text-lg font-bold mt-2">{{ cand.pet_name or 'Unnamed' }} ({{ cand.species|capitalize }})</h3>
-                <p class="text-sm text-gray-300 mt-1">📍 <strong>Address:</strong> {{ cand.address }}</p>
-                <p class="text-sm text-gray-300">📅 <strong>Date:</strong> {{ cand.event_date }}</p>
-                <p class="text-sm text-gray-400 mt-2"><strong>Color / Markings:</strong> {{ cand.color or 'N/A' }} | {{ cand.distinctive_marks or 'N/A' }}</p>
-
-                <div class="mt-4 pt-3 border-t border-gray-700 flex justify-between items-center text-sm">
-                    <span class="text-indigo-400 font-medium">📞 Contact: {{ cand.contact_name }} ({{ cand.contact_phone }})</span>
-                </div>
-            </div>
-        </div>
-        {% else %}
-        <div class="bg-gray-800 p-8 rounded-lg text-center text-gray-400">
-            No matching active reports found in the database for this species yet.
-        </div>
-        {% endfor %}
+    <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color);">
+      <a href="tel:{{ match.contact_phone }}" class="btn btn-primary" style="width: 100%; justify-content: center;">
+        📞 Contact Owner
+      </a>
     </div>
+  </div>
 </div>
-{% endblock %}
