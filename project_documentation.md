@@ -158,7 +158,7 @@ Ranked Reports
                                     │                           │
                                     ▼                           ▼
                               ┌───────────┐              ┌────────────┐
-                              │ Detection │              │ Embedding │
+                              │ Detection │              │ Embedding  │
                               │   Model   │              │   Model    │
                               └───────────┘              └─────┬──────┘
                                                                │
