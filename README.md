@@ -31,7 +31,8 @@ PawMatch is a full-stack web application designed to help owners locate lost pet
    ```
 3. **Configure Environment Variables:**
 
-   Create a .env file in the root directory: 
+   Create a .env file in the root directory:
+
    ```text
    Code snippet
    POSTGRES_DB=pawmatch
@@ -40,7 +41,8 @@ PawMatch is a full-stack web application designed to help owners locate lost pet
    POSTGRES_HOST=localhost
    POSTGRES_PORT=5432
    ```
-5. **Run Application:**
+
+4. **Run Application:**
    ```bash
    python app.py
    ```
@@ -50,5 +52,5 @@ PawMatch is a full-stack web application designed to help owners locate lost pet
 - [x] **Custom ML Engine:** Fine-tune and integrate custom ResNet-50 pet embedder model.
 - [x] **Enhanced Ranking Engine:** Incorporate time-decay metrics and automated email match notifications.
 - [ ] **UI/UX Polishing:** Redesign user forms and dashboard views using styled CSS components.
-- [ ] **Authentication:** Implement full user registration, password hashing, and session persistence.
+- [x] **User Authentication & Session Management:** Secure registration, password verification, and database-validated session handling.s
 - [ ] **pgvector Migration:** Native PostgreSQL vector extension integration for scalable vector similarity indexing.
