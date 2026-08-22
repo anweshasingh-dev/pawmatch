@@ -77,7 +77,7 @@ Docker and Docker Compose configurations are included for running the applicatio
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```text
                     ┌─────────────────────┐
@@ -93,7 +93,7 @@ Docker and Docker Compose configurations are included for running the applicatio
              ┌─────────────────┼─────────────────┐
              ▼                 ▼                 ▼
       ┌─────────────┐   ┌──────────────┐  ┌─────────────┐
-      │ PostgreSQL  │   │ AI Pipeline  │  │ Geocoding   │
+      │ PostgreSQL  │   │  AI Pipeline │  │  Geocoding  │
       │  Database   │   │              │  │             │
       └─────────────┘   │ Detection    │  │ Coordinates │
                         │ Embeddings   │  │ + Distance  │
