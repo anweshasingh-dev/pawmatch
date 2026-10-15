@@ -1,44 +1,84 @@
+{% from 'ui.html' import icon, paw_animation %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>PawMatch — AI Pet Recovery</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#F7FAF2">
+{% if request.endpoint == 'view_matches' %}
+<script>
+// Keep the match-results screen covered until this search has had three seconds.
+// The native request runs immediately; time already spent searching counts too.
+(function () {
+  const minimum = 3000;
+  let remaining = minimum;
+  try {
+    const search = JSON.parse(sessionStorage.getItem('pawmatch.matchSearch'));
+    sessionStorage.removeItem('pawmatch.matchSearch');
+    const elapsed = search ? Date.now() - search.startedAt : NaN;
+    if (search && (search.destination === 'report' || search.destination === location.pathname)
+        && Number.isFinite(elapsed) && elapsed >= 0 && elapsed < 3600000) {
+      remaining = Math.max(0, minimum - elapsed);
+    }
+  } catch (_) { /* Storage unavailable: still give this results page three seconds. */ }
+  if (remaining > 0) {
+    document.documentElement.dataset.loading = 'matches';
+    document.documentElement.dataset.matchResultsPending = 'true';
+    window.setTimeout(function () {
+      delete document.documentElement.dataset.loading;
+      delete document.documentElement.dataset.matchResultsPending;
+      document.querySelector('#main')?.removeAttribute('aria-busy');
+    }, remaining);
+  }
+})();
+</script>
+{% endif %}
+<title>
+{% block title %}PawMatch ? A little help finding home{% endblock %}
+</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+<script src="{{ url_for('static', filename='js/ui.js') }}" defer>
+</script>
 </head>
-<body class="bg-gray-900 text-gray-100 font-sans min-h-screen flex flex-col">
-    <nav class="bg-gray-800 border-b border-gray-700 p-4">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <a href="/" class="text-2xl font-bold text-indigo-400">🐾 PawMatch</a>
-            <div class="space-x-4">
-                <a href="/report/lost" class="bg-red-600 hover:bg-red-700 px-3 py-2 rounded text-sm font-semibold">Report Lost</a>
-                <a href="/report/found" class="bg-emerald-600 hover:bg-emerald-700 px-3 py-2 rounded text-sm font-semibold">Report Found</a>
-                {% if session.get('user') %}
-                    <a href="/my-reports" class="text-gray-300 hover:text-white">My Reports</a>
-                    <a href="/logout" class="text-red-400 hover:text-red-300">Logout ({{ session.user.name }})</a>
-                {% else %}
-                    <a href="/login" class="text-gray-300 hover:text-white">Login</a>
-                    <a href="/register" class="bg-indigo-600 hover:bg-indigo-700 px-3 py-2 rounded text-sm font-semibold">Register</a>
-                {% endif %}
-            </div>
-        </div>
-    </nav>
-
-    <main class="max-w-7xl mx-auto p-6 flex-grow w-full">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, msg in messages %}
-                    <div class="mb-4 p-4 rounded text-sm font-medium {% if category == 'success' %}bg-emerald-900 text-emerald-200{% elif category == 'error' %}bg-red-900 text-red-200{% else %}bg-blue-900 text-blue-200{% endif %}">
-                        {{ msg }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        {% block content %}{% endblock %}
-    </main>
-
-    <footer class="bg-gray-800 text-center py-4 border-t border-gray-700 text-gray-400 text-xs">
-        PawMatch — AI Powered Lost & Found Pet Recovery System
-    </footer>
+<body>
+<div id="app-loader" class="app-loader">
+<div class="loader-panel">
+<div role="status" aria-live="polite" aria-atomic="true">
+{{ paw_animation() }}
+<p class="loader-message" data-loading-message>Looking for possible matches...</p>
+</div>
+</div>
+</div>
+<a href="#main" class="skip-link">Skip to content</a>
+<header class="site-header">
+<nav class="nav-shell" aria-label="Main navigation">
+<a class="brand" href="{{ url_for('index') }}">
+<span class="brand-mark">{{ icon('paw-print') }}</span>PawMatch<span class="brand-dot">.</span>
+</a>
+<div class="nav-links">
+<a class="nav-link button secondary small nav-button" href="{{ url_for('index') }}"{% if request.endpoint == 'index' %} aria-current="page"{% endif %}>Pet reports</a>
+{% if session.get('user') %}
+<a class="nav-link" href="{{ url_for('my_reports') }}">My reports</a>
+<a class="nav-link" href="{{ url_for('logout') }}">{{ icon('log-out') }}Sign out</a>
+{% else %}
+<a class="nav-link button secondary small nav-button" href="{{ url_for('login') }}"{% if request.endpoint == 'login' %} aria-current="page"{% endif %}>Log in</a>
+{% endif %}
+</div>
+</nav>
+</header>
+<main id="main" class="main-shell" tabindex="-1">
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% for category, msg in messages %}
+<div class="notice {{ category }}" role="{{ 'alert' if category == 'error' else 'status' }}">{{ icon('circle-alert' if category == 'error' else 'circle-check' if category == 'success' else 'info') }}<span>{{ msg }}</span>
+</div>
+{% endfor %}
+{% endwith %}
+{% block content %}
+{% endblock %}
+</main>
+{% include 'footer.html' %}
 </body>
 </html>

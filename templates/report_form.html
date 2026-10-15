@@ -1,58 +1,90 @@
 {% extends 'base.html' %}
+{% from 'ui.html' import icon %}
+{% block title %}Report a {{ report_type|lower }} pet ? PawMatch{% endblock %}
 {% block content %}
-<div class="max-w-2xl mx-auto bg-gray-800 p-8 rounded-lg border border-gray-700">
-    <h1 class="text-2xl font-bold mb-6 text-indigo-400">Report {{ report_type }} Pet</h1>
-
-    <form method="POST" enctype="multipart/form-data" class="space-y-4">
-        <div>
-            <label class="block text-sm font-semibold mb-1">Pet Photo*</label>
-            <input type="file" name="image" required class="w-full bg-gray-700 p-2 rounded text-sm text-gray-200">
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-            <div>
-                <label class="block text-sm font-semibold mb-1">Pet Name</label>
-                <input type="text" name="pet_name" placeholder="e.g. Bruno" class="w-full bg-gray-700 p-2 rounded text-sm text-gray-100">
-            </div>
-            <div>
-                <label class="block text-sm font-semibold mb-1">Species</label>
-                <select name="species" class="w-full bg-gray-700 p-2 rounded text-sm text-gray-100">
-                    <option value="dog">Dog</option>
-                    <option value="cat">Cat</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-            <div>
-                <label class="block text-sm font-semibold mb-1">Breed / Appearance</label>
-                <input type="text" name="breed" placeholder="e.g. Labrador" class="w-full bg-gray-700 p-2 rounded text-sm text-gray-100">
-            </div>
-            <div>
-                <label class="block text-sm font-semibold mb-1">Color / Markings</label>
-                <input type="text" name="color" placeholder="e.g. Golden brown" class="w-full bg-gray-700 p-2 rounded text-sm text-gray-100">
-            </div>
-        </div>
-
-        <div>
-            <label class="block text-sm font-semibold mb-1">Last Seen / Found Address*</label>
-            <input type="text" name="address" required placeholder="e.g. Central Park West" class="w-full bg-gray-700 p-2 rounded text-sm text-gray-100">
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-            <div>
-                <label class="block text-sm font-semibold mb-1">Your Name*</label>
-                <input type="text" name="contact_name" required value="{{ session.get('user', {}).get('name', '') }}" class="w-full bg-gray-700 p-2 rounded text-sm text-gray-100">
-            </div>
-            <div>
-                <label class="block text-sm font-semibold mb-1">Contact Phone*</label>
-                <input type="text" name="contact_phone" required placeholder="+1 555-0199" class="w-full bg-gray-700 p-2 rounded text-sm text-gray-100">
-            </div>
-        </div>
-
-        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 p-3 rounded font-bold text-white mt-4">
-            Submit {{ report_type }} Report
-        </button>
-    </form>
+<a class="back-link" href="{{ url_for('index') }}">{{ icon('arrow-left') }}Back to pet reports</a>
+<div class="form-layout">
+<aside class="form-intro">
+<span class="eyebrow">A step closer to home</span>
+<h1>{{ "Let's find your little friend." if report_type == 'LOST' else 'Someone is looking for this face.' }}</h1>
+<p class="muted">Share what you know. A clear photo and location help us look for possible matches.</p>
+<div class="tip-card">{{ icon('scan-search') }}<div>
+<h3>A photo makes a difference</h3>
+<p>Choose a well-lit photo with the pet's face and markings clearly visible.</p>
+</div>
+</div>
+<p class="privacy-note">{{ icon('info') }}The contact details you provide will be visible to people reviewing possible matches.</p>
+</aside>
+<section class="panel form-panel">
+<div class="form-title">
+<h2>Report a {{ report_type|lower }} pet</h2>
+<span class="badge {{ 'lost' if report_type == 'LOST' else 'found' }}">{{ report_type|capitalize }}</span>
+</div>
+<p class="muted form-caption">Fields marked * are required.</p>
+<form method="POST" enctype="multipart/form-data" data-report-form>
+<fieldset>
+<legend>
+<span>01</span> A familiar face</legend>
+<label class="upload-zone" for="image">
+<span class="upload-icon">{{ icon('image-plus') }}</span>
+<strong>Add a photo of the pet *</strong>
+<span>A clear JPG, PNG, or WebP works best</span>
+<input type="file" id="image" name="image" accept="image/jpeg,image/png,image/webp" required aria-describedby="upload-hint">
+</label>
+<p class="field-hint" id="upload-hint">Choose a photo from your device.</p>
+<img id="photo-preview" class="upload-preview" alt="Selected pet photo" hidden>
+</fieldset>
+<fieldset>
+<legend>
+<span>02</span> The little details</legend>
+<div class="field-grid">
+<div class="field">
+<label for="pet_name">Pet name</label>
+<input id="pet_name" name="pet_name" placeholder="e.g. Bruno">
+</div>
+<div class="field">
+<label for="species">Species</label>
+<select id="species" name="species">
+<option value="dog">Dog</option>
+<option value="cat">Cat</option>
+</select>
+</div>
+<div class="field">
+<label for="breed">Breed / appearance</label>
+<input id="breed" name="breed" placeholder="e.g. Golden retriever">
+</div>
+<div class="field">
+<label for="color">Color / markings</label>
+<input id="color" name="color" placeholder="e.g. Golden, white paws">
+</div>
+</div>
+</fieldset>
+<fieldset>
+<legend>
+<span>03</span> Where your paths crossed</legend>
+<div class="field">
+<label for="address">{{ 'Last seen' if report_type == 'LOST' else 'Found' }} address *</label>
+<input id="address" name="address" required placeholder="Street, neighborhood, city" aria-describedby="address-hint">
+<p class="field-hint" id="address-hint">Include the city to help locate the right area.</p>
+</div>
+</fieldset>
+<fieldset>
+<legend>
+<span>04</span> A way to reach you</legend>
+<div class="field-grid">
+<div class="field">
+<label for="contact_name">Your name *</label>
+<input id="contact_name" name="contact_name" autocomplete="name" required value="{{ session.get('user', {}).get('name', '') }}">
+</div>
+<div class="field">
+<label for="contact_phone">Contact phone *</label>
+<input id="contact_phone" name="contact_phone" type="tel" autocomplete="tel" required placeholder="Include country code">
+</div>
+</div>
+</fieldset>
+<button class="button primary full-width" type="submit" data-submit>{{ icon('paw-print') }}Submit {{ report_type|lower }} report</button>
+<p class="submission-status muted" role="status" hidden>Looking for possible matches. This may take a moment?</p>
+</form>
+</section>
 </div>
 {% endblock %}

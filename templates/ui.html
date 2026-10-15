@@ -1,0 +1,58 @@
+{% macro paw_animation() -%}
+<picture class="paw-animation">
+<source media="(prefers-reduced-motion: reduce)" srcset="{{ url_for('static', filename='animations/cat-paw-still.svg') }}">
+<img src="{{ url_for('static', filename='animations/cat-paw-loading.svg') }}" width="112" height="105" alt="" aria-hidden="true">
+</picture>
+{%- endmacro %}
+{% macro icon(name) -%}
+<img class="icon" src="{{ url_for('static', filename='icons/' ~ name ~ '.svg') }}" alt="" aria-hidden="true" width="20" height="20">
+{%- endmacro %}
+{% macro photo(r, cls='pet-photo') -%}
+<div class="photo-wrap {{ cls }}" data-photo-state="{{ 'loading' if r.image_path else 'missing' }}">
+{% if r.image_path %}<div class="photo-loading" aria-hidden="true"><span>Loading photo...</span></div>{% endif %}
+<div class="photo-fallback">{{ icon('paw-print') }}<span>Photo unavailable</span>
+</div>
+{% if r.image_path %}
+<img class="report-photo" src="{{ url_for('uploaded_file', filename=r.image_path.replace('\\', '/').split('/')[-1]) }}" alt="{{ r.pet_name or r.species|capitalize or 'Reported pet' }}" loading="lazy">
+{% endif %}
+</div>
+{%- endmacro %}
+{% macro badge(r) -%}
+<span class="badge {{ 'lost' if r.type == 'LOST' else 'found' }}">{{ icon('search' if r.type == 'LOST' else 'heart-handshake') }}{{ r.type|capitalize }}</span>
+{%- endmacro %}
+{% macro pet_card(r, match=none) -%}
+<article class="pet-card">
+<div class="card-image">{{ photo(r) }}<div class="image-badges">{{ badge(r) }}{% if match is not none %}
+<span class="badge score">{{ match.match_score }}% similarity</span>
+{% endif %}
+</div>
+</div>
+<div class="card-body">
+<div class="pet-heading">
+<h3>{{ r.pet_name or 'Unnamed pet' }}</h3>
+<span>{{ r.species|capitalize }}</span>
+</div>
+<p class="meta">{{ icon('map-pin') }}<span>{{ r.address or 'Location not provided' }}</span>
+</p>
+<p class="meta">{{ icon('calendar-days') }}<span>{{ r.event_date or 'Date not provided' }}</span>
+</p>
+{% if match is not none %}
+<p class="appearance">{{ r.breed or 'Breed unknown' }} ? {{ r.color or 'Color not provided' }}{% if match.distance_km is not none %} ? {{ '%.1f'|format(match.distance_km) }} km away{% endif %}
+</p>
+<div class="contact-actions">
+{% if r.contact_phone %}
+<a class="button primary" href="tel:{{ r.contact_phone }}">{{ icon('phone') }}Call contact</a>
+{% endif %}
+{% if r.contact_email %}
+<a class="button secondary" href="mailto:{{ r.contact_email }}">{{ icon('mail') }}Email contact</a>
+{% endif %}
+{% if not r.contact_phone and not r.contact_email %}
+<p class="muted">Contact details unavailable.</p>
+{% endif %}
+</div>
+{% else %}
+<a class="card-link" href="{{ url_for('view_matches', report_id=r.id) }}">View possible matches {{ icon('arrow-right') }}</a>
+{% endif %}
+</div>
+</article>
+{%- endmacro %}

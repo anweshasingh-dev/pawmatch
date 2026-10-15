@@ -1,58 +1,49 @@
-
 {% extends 'base.html' %}
+{% from 'ui.html' import icon, photo, badge %}
+{% block title %}My reports ? PawMatch{% endblock %}
 {% block content %}
-<h1 class="text-3xl font-bold mb-6">📂 My Submitted Reports</h1>
-
-<div class="space-y-4">
-    {% for r in reports %}
-    <div class="bg-gray-800 border border-gray-700 rounded-lg p-5 flex flex-col md:flex-row justify-between items-center gap-4">
-        <div class="flex items-center gap-4 w-full md:w-auto">
-            <img src="/{{ r.image_path }}" class="w-20 h-20 object-cover rounded">
-            <div>
-                <div class="flex items-center gap-2">
-                    <span class="px-2 py-0.5 text-xs font-bold rounded {% if r.type == 'LOST' %}bg-red-800 text-red-200{% else %}bg-emerald-800 text-emerald-200{% endif %}">
-                        {{ r.type }}
-                    </span>
-                    <span class="text-xs text-gray-400">Report #{{ r.id }}</span>
-                    <span class="text-xs px-2 py-0.5 rounded {% if r.status == 'ACTIVE' %}bg-blue-900 text-blue-200{% else %}bg-gray-700 text-gray-300{% endif %}">
-                        {{ r.status }}
-                    </span>
-                </div>
-                <h2 class="text-lg font-bold mt-1">{{ r.pet_name or 'Unnamed Pet' }} ({{ r.species|capitalize }})</h2>
-                <p class="text-sm text-gray-400">📍 {{ r.address }} — 📅 {{ r.event_date }}</p>
-            </div>
-        </div>
-
-        <div class="flex items-center gap-3 w-full md:w-auto justify-end">
-            <a href="/matches/{{ r.id }}" class="bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded text-sm font-semibold">
-                View Matches
-            </a>
-            {% if r.status == 'ACTIVE' %}
-            <form action="/resolve/{{ r.id }}" method="POST">
-                <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded text-sm font-semibold">
-                    Mark Resolved
-                </button>
-            </form>
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="mt-4 flex items-center justify-between border-t border-gray-700 pt-3">
-        <span class="text-sm text-gray-400">Status: <strong class="text-white">{{ r.status }}</strong></span>
-
-        <form action="/report/{{ r.id }}/status" method="POST" class="inline-flex gap-2">
-            <select name="status" class="bg-gray-700 text-sm text-white rounded px-2 py-1">
-                <option value="ACTIVE" {% if r.status == 'ACTIVE' %}selected{% endif %}>Active</option>
-                <option value="REUNITED" {% if r.status == 'REUNITED' %}selected{% endif %}>🎉 Reunited</option>
-                <option value="RESOLVED" {% if r.status == 'RESOLVED' %}selected{% endif %}>Resolved</option>
-            </select>
-            <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-xs text-white px-3 py-1 rounded font-semibold">
-                Update
-            </button>
-        </form>
-    </div>
-    {% else %}
-    <p class="text-gray-400">You haven't submitted any pet reports yet.</p>
-    {% endfor %}
+<div class="section-heading">
+<div>
+<span class="eyebrow">Your corner of the community</span>
+<h1>My reports</h1>
+<p class="muted">Follow possible connections and keep your pet reports up to date.</p>
+</div>
+<a class="button primary" href="{{ url_for('report_pet', report_type='lost') }}">{{ icon('image-plus') }}New report</a>
+</div>
+<div class="report-list">
+{% for r in reports %}
+<article class="panel report-row">{{ photo(r, 'row-photo') }}<div class="report-info">
+<div class="report-labels">{{ badge(r) }}<span class="badge status">{{ r.status|capitalize }}</span>
+<span class="report-id">#{{ r.id }}</span>
+</div>
+<h2>{{ r.pet_name or 'Unnamed pet' }} <span class="species-label muted">{{ r.species|capitalize }}</span>
+</h2>
+<p class="meta">{{ icon('map-pin') }}{{ r.address or 'Location not provided' }}</p>
+<p class="meta">{{ icon('calendar-days') }}{{ r.event_date or 'Date not provided' }}</p>
+</div>
+<div class="report-actions">
+<a class="button secondary" href="{{ url_for('view_matches', report_id=r.id) }}">View matches {{ icon('arrow-right') }}</a>
+<form action="{{ url_for('change_report_status', report_id=r.id) }}" method="POST" class="status-form">
+<label class="sr-only" for="status-{{ r.id }}">Status for {{ r.pet_name or 'report ' ~ r.id }}</label>
+<select id="status-{{ r.id }}" name="status">
+{% for status in ['ACTIVE', 'REUNITED', 'RESOLVED'] %}
+<option value="{{ status }}" {{ 'selected' if r.status == status }}>{{ status|capitalize }}</option>
+{% endfor %}
+</select>
+<button class="button secondary small" type="submit">Update</button>
+</form>
+</div>
+</article>
+{% else %}
+<section class="empty-state panel">
+<span class="empty-icon">{{ icon('clipboard-list') }}</span>
+<h2>Your story starts here.</h2>
+<p>You haven't submitted a pet report yet. Share a photo if you've lost or found a companion.</p>
+<div class="hero-actions">
+<a class="button primary" href="{{ url_for('report_pet', report_type='lost') }}">I've lost a pet</a>
+<a class="button secondary" href="{{ url_for('report_pet', report_type='found') }}">I've found a pet</a>
+</div>
+</section>
+{% endfor %}
 </div>
 {% endblock %}

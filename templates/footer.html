@@ -1,0 +1,11 @@
+{% from 'ui.html' import icon %}
+<footer class="site-footer">
+  <div class="footer-art">
+    <img class="footer-illustration" src="{{ url_for('static', filename='images/footer.png') }}"
+         width="1918" height="820" alt="" aria-hidden="true" loading="lazy" decoding="async">
+    <div class="footer-content">
+      <a class="footer-brand" href="{{ url_for('index') }}">{{ icon('paw-print') }}PawMatch</a>
+    </div>
+    <p class="footer-message">A small act of kindness can bring a best friend home.</p>
+  </div>
+</footer>

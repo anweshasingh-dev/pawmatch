@@ -1,17 +1,23 @@
 {% extends 'base.html' %}
+{% from 'ui.html' import icon %}
 {% block content %}
-<div class="max-w-md mx-auto bg-gray-800 p-8 rounded-lg border border-gray-700 mt-10">
-    <h1 class="text-2xl font-bold mb-6 text-indigo-400">Account Login</h1>
-    <form method="POST" class="space-y-4">
-        <div>
-            <label class="block text-sm font-semibold mb-1">Email Address</label>
-            <input type="email" name="email" required class="w-full bg-gray-700 p-2.5 rounded text-sm text-gray-100">
-        </div>
-        <div>
-            <label class="block text-sm font-semibold mb-1">Password</label>
-            <input type="password" name="password" required class="w-full bg-gray-700 p-2.5 rounded text-sm text-gray-100">
-        </div>
-        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 p-2.5 rounded font-bold text-white mt-2">Log In</button>
-    </form>
+<section class="auth-panel panel">
+<span class="auth-mark">{{ icon('paw-print') }}</span>
+<span class="eyebrow">A community that cares</span>
+<h1>Welcome back.</h1>
+<p class="muted">Your community, your reports, and a little hope.</p>
+<form method="POST">
+<div class="field">
+<label for="email">Email address</label>
+<input type="email" id="email" name="email" autocomplete="email" required>
 </div>
+<div class="field">
+<label for="password">Password</label>
+<input type="password" id="password" name="password" autocomplete="current-password" required>
+</div>
+<button type="submit" class="button primary full-width">Log in {{ icon('arrow-right') }}</button>
+</form>
+<p class="auth-switch">New around here? <a href="{{ url_for('register') }}">Create an account</a>
+</p>
+</section>
 {% endblock %}

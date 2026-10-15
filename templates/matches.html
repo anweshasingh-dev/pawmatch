@@ -1,28 +1,36 @@
-<div class="card">
-  <div class="card-img-wrapper">
-    <img src="/{{ match.image_path }}" alt="Match Candidate" />
-    <span class="match-score-badge">
-      ⚡ {{ match.match_score }}% Match
-    </span>
-  </div>
-  
-  <div class="card-body">
-    <h3 class="card-title">{{ match.pet_name or 'Unnamed Pet' }} ({{ match.species | capitalize }})</h3>
-    
-    <div class="card-meta">
-      📍 {{ match.address }}
-    </div>
-    <div class="card-meta">
-      📅 Date: {{ match.event_date }}
-    </div>
-    <div class="card-meta">
-      🎨 Color: {{ match.color or 'N/A' }} | Breed: {{ match.breed or 'Unknown' }}
-    </div>
-
-    <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color);">
-      <a href="tel:{{ match.contact_phone }}" class="btn btn-primary" style="width: 100%; justify-content: center;">
-        📞 Contact Owner
-      </a>
-    </div>
-  </div>
+{% extends 'base.html' %}
+{% from 'ui.html' import icon, photo, badge, pet_card %}
+{% block title %}Possible matches ? PawMatch{% endblock %}
+{% block content %}
+<a class="back-link" href="{{ url_for('index') }}">{{ icon('arrow-left') }}Back to pet reports</a>
+<div class="section-heading">
+<div>
+<span class="eyebrow">A little closer</span>
+<h1>Could this be a connection?</h1>
+<p class="muted">Possible matches for {{ target.pet_name or 'your reported pet' }}. Please confirm the details with the contact.</p>
 </div>
+</div>
+<section class="target-panel panel">{{ photo(target, 'target-photo') }}<div>{{ badge(target) }}<h2>{{ target.pet_name or 'Unnamed pet' }} <span class="muted species-label">{{ target.species|capitalize }}</span>
+</h2>
+<p class="meta">{{ icon('map-pin') }}{{ target.address or 'Location not provided' }}</p>
+<p class="meta">{{ icon('calendar-days') }}{{ target.event_date or 'Date not provided' }}</p>
+</div>
+</section>
+<div class="section-heading">
+<h2>Possible matches <span class="count-pill">{{ matches|length }}</span>
+</h2>
+</div>
+<div class="pet-grid">
+{% for match in matches %}{{ pet_card(match.candidate_report, match) }}{% else %}
+<div class="empty-state panel">
+<span class="empty-icon">{{ icon('scan-search') }}</span>
+<h3>No connections just yet.</h3>
+<p>No possible matches were found right now. Check back as the community shares more reports.</p>
+<a class="button secondary" href="{{ url_for('index') }}">Browse pet reports {{ icon('arrow-right') }}</a>
+</div>
+{% endfor %}
+</div>
+{% if matches %}
+<p class="results-note">{{ icon('info') }}Similarity scores are suggestions, not confirmation of identity. Compare photos, markings, and other details together.</p>
+{% endif %}
+{% endblock %}
