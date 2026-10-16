@@ -1,9 +1,16 @@
+# Web application and authentication
 Flask
+Werkzeug
+
+# PostgreSQL and local environment configuration
 psycopg2-binary
 python-dotenv
+
+# Address geocoding
 geopy
-torch
-torchvision
+
+# Pet-image preprocessing and ResNet embeddings
 pillow
 numpy
-pandas
+torch
+torchvision
